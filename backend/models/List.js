@@ -9,12 +9,15 @@ const listSchema = new Schema({
         maxlength: 50
     },
     description: String,
-    // createdBy: {
-    //     type: mongoose.SchemaTypes.ObjectId,
-    //     ref: 'users',
-    //     required: true
-    // }
-});
+    createdBy: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'users',
+        required: true
+    }
+},
+{timestamps: true}
+);
 
+listSchema.index({ user: 1, name: 1 }, { unique: true })
 const List = mongoose.model('list', listSchema);
 module.exports = List;

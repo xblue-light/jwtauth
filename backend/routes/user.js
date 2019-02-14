@@ -9,7 +9,10 @@ const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
 
 const User = require('../models/User');
+const List = require('../models/List');
 
+
+// Route => "/api/users/register"
 router.post('/register', function(req, res) {
 
     const { errors, isValid } = validateRegisterInput(req.body);
@@ -58,6 +61,7 @@ router.post('/register', function(req, res) {
     });
 });
 
+// Route => "/api/users/login"
 router.post('/login', (req, res) => {
 
     const { errors, isValid } = validateLoginInput(req.body);
@@ -76,39 +80,62 @@ router.post('/login', (req, res) => {
                 return res.status(404).json(errors);
             }
             bcrypt.compare(password, user.password)
-                    .then(isMatch => {
-                        if(isMatch) {
-                            const payload = {
-                                id: user.id,
-                                name: user.name,
-                                avatar: user.avatar
-                            }
-                            jwt.sign(payload, 'secret', {
-                                expiresIn: 3600
-                            }, (err, token) => {
-                                if(err) console.error('There is some error in token', err);
-                                else {
-                                    res.json({
-                                        success: true,
-                                        token: `Bearer ${token}`
-                                    });
-                                }
+            .then(isMatch => {
+                if(isMatch) {
+                    const payload = {
+                        id: user.id,
+                        name: user.name,
+                        avatar: user.avatar
+                    }
+                    jwt.sign(payload, 'secret', {
+                        expiresIn: 3600
+                    }, (err, token) => {
+                        if(err) console.error('There is some error in token', err);
+                        else {
+                            res.json({
+                                success: true,
+                                token: `Bearer ${token}`
                             });
                         }
-                        else {
-                            errors.password = 'Incorrect Password';
-                            return res.status(400).json(errors);
-                        }
                     });
+                }
+                else {
+                    errors.password = 'Incorrect Password';
+                    return res.status(400).json(errors);
+                }
+            });
         });
 });
 
+// Route => "/api/users/me"
 router.get('/me', passport.authenticate('jwt', { session: false }), (req, res) => {
-    return res.json({
+    return res.status(200).json({
         id: req.user.id,
         name: req.user.name,
         email: req.user.email
     });
 });
 
+// Route => "/api/users/list"
+router.get('/list', passport.authenticate('jwt', { session: false }), (req, res) => {
+
+    List.find(function(err, data){
+        if(err){
+          console.log(err);
+        }
+        else {
+          return res.json(data);
+        }
+    });
+
+});
+
+router.post('/list', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const createdBy = req.user.id;
+    const doc = List.create({ ...req.body, createdBy });
+    return res.status(200).json(doc);
+});
+
+
 module.exports = router;
+

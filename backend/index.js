@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const users = require('./routes/user'); 
-const lists = require('./routes/list'); 
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true })
         .then(()  => {console.log('Database is connected')}, err => {console.log('CANNOT connect to the database'+ err)});
@@ -16,7 +15,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use('/api/users', users);
-app.use('/api/users', lists);
 
 app.get('/', function(req, res) {
     res.send(`Express server running on => http://localhost:${PORT}`);

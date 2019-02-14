@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import axios from 'axios';
+import ListItem from './ListItem';
 
 class Home extends Component {
 
@@ -18,6 +19,10 @@ class Home extends Component {
         axios.get('/api/users/list')
         .then(response => {
             this.setState({ list: response.data });
+        })
+
+        axios.get('/api/users/me')
+        .then(response => {
             console.log(response.data);
         })
     }
@@ -32,6 +37,12 @@ class Home extends Component {
                     Greetings, {user.name}! You are logged in!
                     <br/>
                 </div>
+                <h1>Display user list</h1>
+                {
+                    this.state.list.map((item) => 
+                        <ListItem key={item._id} list={item} />
+                    )
+                }
            </div>
         )
         const userIsNotAuthenticated = (
