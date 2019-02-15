@@ -2,18 +2,30 @@ const express = require('express');
 const router = express.Router();
 const List = require('../models/List');
 
+// GET LISTS
 router.get('/list', function(req, res){
-    // List.find(function(err, data){
-    //     if(err){
-    //       console.log(err);
-    //     }
-    //     else {
-    //       res.json(data);
-    //     }
-    // });
+    const createdBy = req.user.id;
+    List.find({createdBy}, function(err, data){
+        if(err){
+            return res.status(400).end();
+        }
+        else {
+            return res.status(200).json(data);
+        }
+    });
+});
 
-    // const doc = List.find({ createdBy: req.user._id });
-    // res.status(200).json({ data:doc });
+// POST LIST
+router.post('/list', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    const createdBy = req.user.id;
+    const doc = List.create({ ...req.body, createdBy }, function(err, data){
+        if(err){
+            return res.status(400).end();
+        }
+        else {
+            return res.status(200).json(doc);
+        }
+    });
 });
 
 module.exports = router;

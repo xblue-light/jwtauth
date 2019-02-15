@@ -7,10 +7,8 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const validateRegisterInput = require('../validation/register');
 const validateLoginInput = require('../validation/login');
-
 const User = require('../models/User');
 const List = require('../models/List');
-
 
 // Route => "/api/users/register"
 router.post('/register', function(req, res) {
@@ -116,24 +114,30 @@ router.get('/me', passport.authenticate('jwt', { session: false }), (req, res) =
     });
 });
 
-// Route => "/api/users/list"
-router.get('/list', passport.authenticate('jwt', { session: false }), (req, res) => {
+// GET ALL LISTS
+router.get('/list', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const docs = await List
+            .find({ createdBy: req.user.id })
+            .lean()
+            .exec();
 
-    List.find(function(err, data){
-        if(err){
-          console.log(err);
-        }
-        else {
-          return res.json(data);
-        }
-    });
-
+        res.status(200).json(docs);
+    } catch (e) {
+        console.error(e);
+        res.status(400).end();
+    }
 });
 
-router.post('/list', passport.authenticate('jwt', { session: false }), (req, res) => {
-    const createdBy = req.user.id;
-    const doc = List.create({ ...req.body, createdBy });
-    return res.status(200).json(doc);
+// POST LIST
+router.post('/list', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const doc = await List.create({ ...req.body, createdBy: req.user.id });
+        res.status(200).json(doc);
+    } catch(e) {
+        console.error(e);
+        res.status(400).end();
+    }
 });
 
 
