@@ -31,3 +31,15 @@
     transform: rotate(360deg);
   }
 }
+
+.nav-link.logout-btn{
+  background: transparent !important;
+  border: none !important;
+}
+.btn.btn-primary.btn-md {
+  margin-right: 5px;
+}
+
+.nav-container {
+  background-color: #ddd;
+}

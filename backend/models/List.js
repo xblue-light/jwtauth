@@ -8,7 +8,34 @@ const listSchema = new Schema({
         trim: true,
         maxlength: 50
     },
-    description: String,
+    address: {
+        type: String,
+        required: true,
+        maxlength: 40
+    },
+    country: {
+        type: String,
+        required: true,
+        maxlength: 15
+    },
+    city: {
+        type: String,
+        required: true,
+        maxlength: 20
+    },
+    state: {
+        type: String,
+        required: true,
+        maxlength: 10
+    },
+    phone: {
+        type: String,
+        required: true,
+        maxlength: 20
+    },
+    description: {
+        type: String
+    },
     createdBy: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'users',

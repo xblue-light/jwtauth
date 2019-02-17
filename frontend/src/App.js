@@ -9,7 +9,11 @@ import Navbar from './components/Navbar';
 import Register from './components/Register';
 import Login from './components/Login';
 import Home from './components/Home';
+import Index from './components/Index';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import EditList from './components/EditList';
+import NewList from './components/NewList';
+import './App.css';
 
 if(localStorage.jwtToken) {
   setAuthToken(localStorage.jwtToken);
@@ -27,15 +31,22 @@ class App extends Component {
     return (
       <Provider store = { store }>
         <Router>
-            <div>
-              <Navbar />
-                <Route exact path="/" component={ Home } />
-                <div className="container">
-                  <Route exact path="/register" component={ Register } />
-                  <Route exact path="/login" component={ Login } />
-                </div>
+          <div>
+            <div className="container-fluid nav-container">
+              <div className="container">
+                <Navbar />
+              </div>
             </div>
-          </Router>
+            <Route exact path="/" component={ Home } />
+            <div className="container">
+              <Route exact path="/register" component={ Register } />
+              <Route exact path="/login" component={ Login } />
+              <Route exact path="/index" component={ Index } />
+              <Route exact path="/create" component={ NewList } />
+              <Route path='/edit/:id' component={ EditList } />
+            </div>
+          </div>
+        </Router>
         </Provider>
     );
   }

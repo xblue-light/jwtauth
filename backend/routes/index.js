@@ -10,7 +10,7 @@ const validateLoginInput = require('../validation/login');
 const User = require('../models/User');
 const List = require('../models/List');
 
-// Route => "/api/users/register"
+// Route => '/api/users/register'
 router.post('/register', function(req, res) {
 
     const { errors, isValid } = validateRegisterInput(req.body);
@@ -59,7 +59,7 @@ router.post('/register', function(req, res) {
     });
 });
 
-// Route => "/api/users/login"
+// Route => '/api/users/login'
 router.post('/login', (req, res) => {
 
     const { errors, isValid } = validateLoginInput(req.body);
@@ -105,12 +105,13 @@ router.post('/login', (req, res) => {
         });
 });
 
-// Route => "/api/users/me"
+// GET LOGGED IN USER OBJECT
 router.get('/me', passport.authenticate('jwt', { session: false }), (req, res) => {
     return res.status(200).json({
-        id: req.user.id,
         name: req.user.name,
-        email: req.user.email
+        email: req.user.email,
+        id: req.user.id,
+        avatar: req.user.avatar
     });
 });
 
@@ -140,6 +141,53 @@ router.post('/list', passport.authenticate('jwt', { session: false }), async (re
     }
 });
 
+// REMOVE LIST
+router.delete('/list/delete/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        await List.findByIdAndDelete({ _id: req.params.id });
+        res.status(200).json("List has been removed!");
+    } catch (e) {
+        console.error(e);
+        res.status(400).end();
+    }
+});
+
+// GET LIST BY ID
+router.get('/list/edit/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+    try {
+        const doc = await List.findById({ _id: req.params.id });
+        res.status(200).json(doc);
+    } catch (e) {
+        console.error(e);
+        res.status(400).end();
+    }
+});
+
+// UPDATE LIST
+router.post('/list/update/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+    List.findById(req.params.id, function(err, list) {
+        if (!list)
+            res.status(404).send("Data is not found");
+        else {
+
+            list.name = req.body.name;
+            list.address = req.body.address;
+            list.country = req.body.country;
+            list.city = req.body.city;
+            list.state = req.body.state;
+            list.phone = req.body.phone;
+            list.description = req.body.description;
+
+            list.save().then(response => {
+                res.status(200).json({...req.body});
+            })
+            .catch(err => {
+                res.status(400).send("Not able to update the database");
+            });
+        }
+    });
+});
+  
 
 module.exports = router;
 

@@ -2,55 +2,54 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import axios from 'axios';
-import ListItem from './ListItem';
+// import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class Home extends Component {
 
     constructor(props) {
         super(props);
         this.state = { 
-            list: []
+            users: {}
         };
-      }
-
-    // Fetch all the lists from the database
-    componentDidMount(){
-        axios.get('/api/users/list')
-        .then(response => {
-            this.setState({ list: response.data });
-        })
-
-        axios.get('/api/users/me')
-        .then(response => {
-            console.log(response.data);
-        })
     }
+
+    // getUserObjectAPI = async () => {
+    //     let res = await axios.get('/api/users/me');
+    //     let response = await res.data;
+    //     this.setState({ users: response });
+    //     console.log(response);
+    // };
+
+    // componentDidMount(){
+    //     this.getUserObjectAPI();
+    // }
 
     render() {
         const { isAuthenticated, user } = this.props.auth;
         const userIsAuthenticated = (
-           <div>
+            <div className="col-12 offset-md-4 col-md-4">
                 <br/>
                 <br/>
-                <div className="alert alert-success">
-                    Greetings, {user.name}! You are logged in!
-                    <br/>
+                <br/>
+                <div className="card">
+                    <img src={user.avatar} alt={user.name} title={user.name} />
+                    <div className="card-body">
+                        <h5 className="card-title">Welcome, <b>{user.name}</b></h5>
+                        <p className="card-text">ID: {user.id}</p>
+                        <a href="/index" className="btn btn-primary btn-md">Contacts</a>
+                        <a href="/create" className="btn btn-secondary btn-md">Add Contact</a>
+                    </div>
                 </div>
-                <h1>Display user list</h1>
-                {
-                    this.state.list.map((item) => 
-                        <ListItem key={item._id} list={item} />
-                    )
-                }
-           </div>
+            </div>
         )
         const userIsNotAuthenticated = (
             <div>
                 <br/>
                 <br/>
+                <br/>
                 <div className="alert alert-warning">
-                    Greetings, guest! You are not logged in!
+                    <b>Greetings, guest! You are not logged in! To continue <a href="/login">login</a> here</b>
                 </div>
             </div>
         )
@@ -71,7 +70,8 @@ Home.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-    auth: state.auth
+    auth: state.auth,
+    user: state.user
 })
 
 export default connect(mapStateToProps)(withRouter(Home));
